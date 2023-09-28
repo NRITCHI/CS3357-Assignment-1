@@ -1,5 +1,4 @@
 import argparse
-import sys
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
@@ -24,21 +23,16 @@ def handle_client(client_socket, client_address):
             if not request:
                 print(f"Connection closed by {client_address}")
                 break
-
             print(f"Received request from {client_address}")
-
-            # Parse HTTP GET request
             lines = request.split("\r\n")
             get_line = lines[0].split(" ")
             filename = get_line[1][1:]
-
             try:
                 with open(filename, 'r') as f:
                     filedata = f.read()
                 response = 'HTTP/1.1 200 OK\r\n\r\n' + filedata
             except FileNotFoundError:
                 response = 'HTTP/1.1 404 Not Found\r\n\r\n'
-
             client_socket.send(response.encode())
         client_socket.close()
     except Exception as e:
@@ -57,4 +51,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Server is shutting down")
         serverSocket.close()
-        sys.exit(0)

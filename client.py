@@ -17,15 +17,16 @@ clientSocket.connect((serverIP, serverPort))
 # Send HTTP GET request and receive response
 get_request = f"GET /{filename} HTTP/1.1\r\nHost: {serverIP}\r\n\r\n"
 clientSocket.send(get_request.encode())
-response = clientSocket.recv(1024).decode()
+response = clientSocket.recv(4096).decode()
 
 # Parse and save the file if it exists
 lines = response.split("\r\n\r\n")
 header = lines[0]
 filedata = lines[1]
 if "200 OK" in header:
-    with open(f"received_{filename}", 'w') as f:
-        f.write(filedata)
+    with open(f"received_{filename}", 'wb') as f:
+        f.write(filedata.encode())
+    print(f"File {filename} received and saved as received_{filename}")
 else:
     print("Received 404 Not Found")
 
